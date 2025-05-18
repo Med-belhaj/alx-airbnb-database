@@ -12,7 +12,7 @@ LEFT JOIN bookings AS b
 GROUP BY u.id, u.first_name, u.last_name
 ORDER BY total_bookings DESC;
 
--- 2.2 Rank properties based on the total number of bookings received
+-- 2.2 Rank properties based on the total number of bookings received using RANK()
 SELECT
   p.id                   AS property_id,
   p.title                AS property_title,
@@ -25,3 +25,17 @@ LEFT JOIN bookings AS b
   ON p.id = b.property_id
 GROUP BY p.id, p.title
 ORDER BY booking_rank;
+
+-- 2.3 Rank properties using ROW_NUMBER()
+SELECT
+  p.id                   AS property_id,
+  p.title                AS property_title,
+  COUNT(b.id)            AS booking_count,
+  ROW_NUMBER() OVER (
+    ORDER BY COUNT(b.id) DESC
+  )                       AS booking_row_number
+FROM properties AS p
+LEFT JOIN bookings AS b
+  ON p.id = b.property_id
+GROUP BY p.id, p.title
+ORDER BY booking_row_number;
